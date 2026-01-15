@@ -102,6 +102,55 @@
       font-weight: 600;
     }
 
+    .part-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      object-fit: contain;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      padding: 4px;
+    }
+
+    .part-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .result-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .result-meta {
+      display: grid;
+      gap: 4px;
+    }
+
+    .preview-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .preview-img {
+      width: 72px;
+      height: 72px;
+      border-radius: 14px;
+      object-fit: contain;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      padding: 6px;
+      display: none;
+    }
+
+    .preview-img.active {
+      display: inline-block;
+    }
+
     .pill-note {
       display: block;
       font-weight: 400;
@@ -117,6 +166,18 @@
     .combo-title {
       font-weight: 700;
       color: var(--accent);
+    }
+
+    .result-link {
+      display: inline-block;
+      margin-top: 6px;
+      color: #25d366;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .result-link:hover {
+      color: #1ebe5d;
     }
 
     @media (max-width: 720px) {
@@ -143,18 +204,27 @@
         <select id="blade-select" required>
           <option value="">Seleziona la lama</option>
         </select>
+        <div class="preview-row">
+          <img class="preview-img" id="blade-preview" alt="Anteprima lama" />
+        </div>
       </label>
       <label>
         Ratchet
         <select id="ratchet-select" required>
           <option value="">Seleziona il ratchet</option>
         </select>
+        <div class="preview-row">
+          <img class="preview-img" id="ratchet-preview" alt="Anteprima ratchet" />
+        </div>
       </label>
       <label>
         Punta
         <select id="bit-select" required>
           <option value="">Seleziona la punta</option>
         </select>
+        <div class="preview-row">
+          <img class="preview-img" id="bit-preview" alt="Anteprima punta" />
+        </div>
       </label>
       <button type="submit">Trova i bey da comprare</button>
       <p class="muted">Esempio: Lama = Keel Shark, Ratchet = 1-60, Punta = T (Taper).</p>
@@ -167,7 +237,241 @@
   </main>
 
   <script>
+    const productLinks = {
+      "Sword Dran (F9580)":
+        "https://www.amazon.it/Beyblade-Starter-Pack-trottola-lanciatore/dp/B0CS8L1HGM?utm_source=chatgpt.com",
+      "Helm Knight (F9581)":
+        "https://www.amazon.it/Beyblade-Starter-Pack-Confezione-lanciatore/dp/B0CS89NLVK?utm_source=chatgpt.com",
+      "Arrow Wizard (F9582)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Scythe Incendio (F9583)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Lance Knight (G0184)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Claw Leon (G0193)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Buster Dran (G1536)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Wand Wizard (G1537)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Wand Wizard (G1538)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Shadow Shinobi (G1539)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Scarlet Garuda (G1673)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Sterling Wolf (G1674)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Shelter Drake (G1675)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Rock Golem (G1676)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Buster Dran (G1751)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Hammer Incendio (G1752)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Stun Medusa (G2738)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Rudder Phoenix (G2739)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Feather Phoenix (G2740)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Courage Dran S (G1677)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Reaper Incendio T (G1678)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Arc Wizard R (G1679)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Dark Perseus B (G1680)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Brush Fox J (G1681)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Fort Hornet R (G1682)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Wriggle Kraken S (G1683)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Antler Stag B (G1684)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Steel Samurai (G0188)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Horn Rhino (G0192)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Keel Shark (G0194)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Talon Ptera (G0195)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Sting Unicorn (G0283)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Roar Tyranno (G0284)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Scythe Incendio (G0285)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Savage Bear (G0286)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Cowl Sphinx (G1530)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Arrow Wizard (G1531)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Obsidian Shell (G1533)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Keel Shark (G1534)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Tide Whale (G1669)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Dagger Dran (G1670)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Lance Knight (G1671)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Yell Kong (G1754)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Arrow Wizard (G1755)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Soar Phoenix (G1756)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Chain Incendio & Arrow Wizard (Dual Pack)":
+        "https://www.amazon.it/beyblade-x-dual-pack/s?k=beyblade+x+dual+pack&utm_source=chatgpt.com",
+      "Knife Shinobi & Keel Shark (Dual Pack)":
+        "https://www.amazon.it/beyblade-x-dual-pack/s?k=beyblade+x+dual+pack&utm_source=chatgpt.com",
+      "Yell Kong & Helm Knight (Dual Pack)":
+        "https://www.amazon.it/beyblade-x-dual-pack/s?k=beyblade+x+dual+pack&utm_source=chatgpt.com",
+      "Pearl Tiger & Gill Shark (Dual Pack)":
+        "https://www.amazon.it/beyblade-x-dual-pack/s?k=beyblade+x+dual+pack&utm_source=chatgpt.com",
+      "Circle Ghost & Chain Incendio (Dual Pack)":
+        "https://www.amazon.it/beyblade-x-dual-pack/s?k=beyblade+x+dual+pack&utm_source=chatgpt.com",
+      "Hack Viking & Circle Ghost (Dual Pack)":
+        "https://www.amazon.it/beyblade-x-dual-pack/s?k=beyblade+x+dual+pack&utm_source=chatgpt.com",
+      "Drop Attack Battle Set (G0842)":
+        "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com",
+      "Dual Pack (Amazon)":
+        "https://www.amazon.it/s?k=beyblade+x+dual+pack",
+      "Iron Man & Thanos (Dual Pack)":
+        "https://www.amazon.it/s?k=beyblade+x+iron+man+thanos+dual+pack",
+      "Spider-Man & Venom (Dual Pack)":
+        "https://www.amazon.it/s?k=beyblade+x+spider-man+venom+dual+pack",
+      "Optimus Prime & Megatron (Dual Pack)":
+        "https://www.amazon.it/s?k=beyblade+x+optimus+prime+megatron+dual+pack",
+      "Optimus Primal & Starscream (Dual Pack)":
+        "https://www.amazon.it/s?k=beyblade+x+optimus+primal+starscream+dual+pack",
+      "Mandolorian & Moff Gideon (Dual Pack)":
+        "https://www.amazon.it/s?k=beyblade+x+mandalorian+moff+gideon+dual+pack",
+      "Luke Skywalker & Darth Vader (Dual Pack)":
+        "https://www.amazon.it/s?k=beyblade+x+luke+skywalker+darth+vader+dual+pack",
+      "T-Rex & Mosasaurus (Dual Pack)":
+        "https://www.amazon.it/s?k=beyblade+x+t-rex+mosasaurus+dual+pack",
+      "Spinosaurus & Quetzalcoatlus (Dual Pack)":
+        "https://www.amazon.it/s?k=beyblade+x+spinosaurus+quetzalcoatlus+dual+pack",
+    };
+
+    const bladeImages = {
+      "Antler Stag B": "images/blades/antler_stag_b.png",
+      "Arc Wizard R": "images/blades/arc_wizard_r.png",
+      "Arrow Wizard": "images/blades/arrow_wizard.png",
+      "Brush Fox J": "images/blades/brush_fox_j.png",
+      "Buster Dran": "images/blades/buster_dran.png",
+      "Chain Incendio": "images/blades/chain_incendio.png",
+      "Circle Ghost": "images/blades/circle_ghost.png",
+      "Claw Leon": "images/blades/claw_leon.png",
+      "Courage Dran S": "images/blades/courage_dran_s.png",
+      "Cowl Sphinx": "images/blades/cowl_sphinx.png",
+      "Dark Perseus B": "images/blades/dark_perseus_b.png",
+      "Dagger Dran": "images/blades/dagger_dran.png",
+      "Sword Dran": "images/blades/sword_dran.png",
+      "Feather Phoenix": "images/blades/feather_phoenix.png",
+      "Fort Hornet R": "images/blades/fort_hornet_r.png",
+      "Gill Shark": "images/blades/gill_shark.png",
+      "Hammer Incendio": "images/blades/hammer_incendio.png",
+      "Helm Knight": "images/blades/helm_knight.png",
+      "Horn Rhino": "images/blades/horn_rhino.png",
+      "Hover Wyvern": "images/blades/hover_wyvern.png",
+      "Impact Drake": "images/blades/impact_drake.png",
+      "Keel Shark": "images/blades/keel_shark.png",
+      "Knife Shinobi": "images/blades/knife_shinobi.png",
+      "Lance Knight": "images/blades/lance_knight.png",
+      "Obsidian Shell": "images/blades/obsidian_shell.png",
+      "Pearl Tiger": "images/blades/pearl_tiger.png",
+      "Reaper Incendio T": "images/blades/reaper_incendio_t.png",
+      "Roar Tyranno": "images/blades/roar_tyranno.png",
+      "Rock Golem": "images/blades/rock_golem.png",
+      "Rudder Phoenix": "images/blades/rudder_phoenix.png",
+      "Savage Bear": "images/blades/savage_bear.png",
+      "Scarlet Garuda": "images/blades/scarlet_garuda.png",
+      "Scythe Incendio": "images/blades/scythe_incendio.png",
+      "Shadow Shinobi": "images/blades/shadow_shinobi.png",
+      "Shelter Drake": "images/blades/shelter_drake.png",
+      "Soar Phoenix": "images/blades/soar_phoenix.png",
+      "Steel Samurai": "images/blades/steel_samurai.png",
+      "Sterling Wolf": "images/blades/sterling_wolf.png",
+      "Sting Unicorn": "images/blades/sting_unicorn.png",
+      "Stun Medusa": "images/blades/stun_medusa.png",
+      "Talon Ptera": "images/blades/talon_ptera.png",
+      "Tide Whale": "images/blades/tide_whale.png",
+      "Wand Wizard": "images/blades/wand_wizard.png",
+      "Wriggle Kraken S": "images/blades/wriggle_kraken_s.png",
+      "Yell Kong": "images/blades/yell_kong.png"
+    };
+
+    const bladeImage = (blade) => bladeImages[blade] || "";
+    const ratchetImage = (ratchet) =>
+      ratchet ? `images/ratchet/${ratchet}.png` : "";
+    const bitImage = (bit) => (bit ? `images/bit/${bit}.png` : "");
+
     const products = [
+      {
+        name: "Iron Man & Thanos (Dual Pack)",
+        beys: [
+          { blade: "Iron Man", ratchet: "4-80", bit: "B" },
+          { blade: "Thanos", ratchet: "4-60", bit: "P" }
+        ]
+      },
+      {
+        name: "Spider-Man & Venom (Dual Pack)",
+        beys: [
+          { blade: "Spider-Man", ratchet: "3-60", bit: "F" },
+          { blade: "Venom", ratchet: "3-80", bit: "N" }
+        ]
+      },
+      {
+        name: "Optimus Prime & Megatron (Dual Pack)",
+        beys: [
+          { blade: "Optimus Prime", ratchet: "4-60", bit: "P" },
+          { blade: "Megatron", ratchet: "4-80", bit: "B" }
+        ]
+      },
+      {
+        name: "Optimus Primal & Starscream (Dual Pack)",
+        beys: [
+          { blade: "Optimus Primal", ratchet: "3-60", bit: "F" },
+          { blade: "Starscream", ratchet: "3-80", bit: "N" }
+        ]
+      },
+      {
+        name: "Mandolorian & Moff Gideon (Dual Pack)",
+        beys: [
+          { blade: "Mandolorian", ratchet: "3-80", bit: "F" },
+          { blade: "Moff Gideon", ratchet: "3-80", bit: "N" }
+        ]
+      },
+      {
+        name: "Luke Skywalker & Darth Vader (Dual Pack)",
+        beys: [
+          { blade: "Luke Skywalker", ratchet: "4-80", bit: "B" },
+          { blade: "Darth Vader", ratchet: "4-60", bit: "P" }
+        ]
+      },
+      {
+        name: "T-Rex & Mosasaurus (Dual Pack)",
+        beys: [
+          { blade: "T-Rex", ratchet: "1-80", bit: "GB" },
+          { blade: "Mosasaurus", ratchet: "9-60", bit: "U" }
+        ]
+      },
+      {
+        name: "Spinosaurus & Quetzalcoatlus (Dual Pack)",
+        beys: [
+          { blade: "Spinosaurus", ratchet: "1-85", bit: "A" },
+          { blade: "Quetzalcoatlus", ratchet: "4-55", bit: "D" }
+        ]
+      },
       { name: "Sword Dran (F9580)", beys: [{ blade: "Sword Dran", ratchet: "3-60", bit: "F" }] },
       { name: "Helm Knight (F9581)", beys: [{ blade: "Helm Knight", ratchet: "3-80", bit: "N" }] },
       { name: "Arrow Wizard (F9582)", beys: [{ blade: "Arrow Wizard", ratchet: "4-80", bit: "B" }] },
@@ -268,6 +572,9 @@
     const bitSelect = document.getElementById("bit-select");
     const form = document.getElementById("bey-form");
     const results = document.getElementById("bey-results");
+    const bladePreview = document.getElementById("blade-preview");
+    const ratchetPreview = document.getElementById("ratchet-preview");
+    const bitPreview = document.getElementById("bit-preview");
 
     if (form && bladeSelect && ratchetSelect && bitSelect && results) {
       const blades = new Set();
@@ -302,6 +609,17 @@
         bladeSelect.appendChild(option);
       });
 
+      bladeSelect.addEventListener("change", () => {
+        const url = bladeImage(bladeSelect.value);
+        if (url) {
+          bladePreview.src = url;
+          bladePreview.classList.add("active");
+        } else {
+          bladePreview.removeAttribute("src");
+          bladePreview.classList.remove("active");
+        }
+      });
+
       sortedRatchets.forEach((ratchet) => {
         const option = document.createElement("option");
         option.value = ratchet;
@@ -309,11 +627,33 @@
         ratchetSelect.appendChild(option);
       });
 
+      ratchetSelect.addEventListener("change", () => {
+        const url = ratchetImage(ratchetSelect.value);
+        if (url) {
+          ratchetPreview.src = url;
+          ratchetPreview.classList.add("active");
+        } else {
+          ratchetPreview.removeAttribute("src");
+          ratchetPreview.classList.remove("active");
+        }
+      });
+
       sortedBits.forEach((bit) => {
         const option = document.createElement("option");
         option.value = bit;
         option.textContent = bit;
         bitSelect.appendChild(option);
+      });
+
+      bitSelect.addEventListener("change", () => {
+        const url = bitImage(bitSelect.value);
+        if (url) {
+          bitPreview.src = url;
+          bitPreview.classList.add("active");
+        } else {
+          bitPreview.removeAttribute("src");
+          bitPreview.classList.remove("active");
+        }
       });
 
       form.addEventListener("submit", (event) => {
@@ -338,7 +678,9 @@
 
         const pushCombo = (combo) => {
           const key = combo
-            .map((bey) => `${bey.blade}|${bey.ratchet}|${bey.bit}`)
+            .map(
+              (bey) => `${bey.product}|${bey.blade}|${bey.ratchet}|${bey.bit}`
+            )
             .sort()
             .join("||");
           if (!comboKeys.has(key)) {
@@ -387,15 +729,36 @@
           return;
         }
 
-        const maxOptions = 8;
+        const maxOptions = 12;
         const shown = combos.slice(0, maxOptions);
         const optionHtml = shown
           .map((combo, index) => {
             const items = combo
-              .map(
-                (bey) =>
-                  `<div class="result-pill">${bey.blade} (${bey.ratchet}${bey.bit})<span class="pill-note">Prodotto: ${bey.product}</span></div>`
-              )
+              .map((bey) => {
+                const productUrl =
+                  productLinks[bey.product] ||
+                  "https://www.amazon.it/beyblade-x-starter-pack/s?k=beyblade+x+starter+pack&utm_source=chatgpt.com";
+                const bladeUrl = bladeImage(bey.blade);
+                const ratchetUrl = ratchetImage(bey.ratchet);
+                const bitUrl = bitImage(bey.bit);
+
+                return `
+                  <div class="result-pill">
+                    <div class="result-row">
+                      <div class="result-meta">
+                        <div>${bey.blade} (${bey.ratchet}${bey.bit})</div>
+                        <div class="part-row">
+                          ${bladeUrl ? `<img class="part-icon" src="${bladeUrl}" alt="Lama ${bey.blade}" />` : ``}
+                          ${ratchetUrl ? `<img class="part-icon" src="${ratchetUrl}" alt="Ratchet ${bey.ratchet}" />` : ``}
+                          ${bitUrl ? `<img class="part-icon" src="${bitUrl}" alt="Punta ${bey.bit}" />` : ``}
+                        </div>
+                        <span class="pill-note">Prodotto: ${bey.product}</span>
+                        <a class="result-link" href="${productUrl}" target="_blank" rel="noreferrer">Apri link</a>
+                      </div>
+                    </div>
+                  </div>
+                `;
+              })
               .join("");
             return `
               <div class="result-combo">
@@ -410,7 +773,6 @@
           combos.length > maxOptions
             ? `<p class="muted">Altre ${combos.length - maxOptions} opzioni disponibili.</p>`
             : "";
-
         results.innerHTML = `
           <h2>Risultato</h2>
           <p>Per ottenere <strong>${blade} ${ratchet}${bit}</strong> puoi comprare questi bey (max 3):</p>
