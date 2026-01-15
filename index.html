@@ -410,10 +410,18 @@
       "Yell Kong": "images/blades/yell_kong.png"
     };
 
-    const bladeImage = (blade) => bladeImages[blade] || "";
+    const storageBase =
+      "https://firebasestorage.googleapis.com/v0/b/progettobey.firebasestorage.app/o/";
+    const storageUrl = (path) =>
+      `${storageBase}${encodeURIComponent(path)}?alt=media`;
+    const normalizeImagePath = (path) =>
+      path.replace(/^images\//i, "IMAGES/");
+    const bladeImage = (blade) =>
+      bladeImages[blade] ? storageUrl(normalizeImagePath(bladeImages[blade])) : "";
     const ratchetImage = (ratchet) =>
-      ratchet ? `images/ratchet/${ratchet}.png` : "";
-    const bitImage = (bit) => (bit ? `images/bit/${bit}.png` : "");
+      ratchet ? storageUrl(`IMAGES/ratchet/${ratchet}.png`) : "";
+    const bitImage = (bit) =>
+      bit ? storageUrl(`IMAGES/bit/${bit}.png`) : "";
 
     const products = [
       {
