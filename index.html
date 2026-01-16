@@ -34,6 +34,32 @@
       margin-bottom: 24px;
     }
 
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .header-nav a {
+      color: #0a0a0a;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 1.1rem;
+      background: var(--accent);
+      padding: 12px 20px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 22px rgba(255, 45, 45, 0.28);
+    }
+
+    .header-nav a:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(255, 45, 45, 0.38);
+    }
+
     h1 {
       font-size: clamp(2rem, 5vw, 3rem);
       margin-bottom: 8px;
@@ -180,7 +206,119 @@
       color: #1ebe5d;
     }
 
+    .auth-card {
+      margin-bottom: 24px;
+    }
+
+    .auth-top {
+      margin-top: 18px;
+      margin-left: auto;
+      max-width: 520px;
+    }
+
+    .auth-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .auth-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    input {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: #0b0b0b;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    button.secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .auth-card button {
+      min-width: 120px;
+    }
+
+    .is-hidden {
+      display: none;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 52px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #2a2a2a;
+      transition: 0.2s ease;
+      border-radius: 999px;
+    }
+
+    .slider::before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      top: 3px;
+      background: #ffffff;
+      transition: 0.2s ease;
+      border-radius: 50%;
+    }
+
+    .switch input:checked + .slider {
+      background: var(--accent);
+    }
+
+    .switch input:checked + .slider::before {
+      transform: translateX(24px);
+    }
+
+    .is-hidden {
+      display: none;
+    }
+
     @media (max-width: 720px) {
+      .header-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .auth-card button {
+        width: 100%;
+      }
+
       .layout {
         grid-template-columns: 1fr;
       }
@@ -193,24 +331,68 @@
 </head>
 <body>
   <header>
-    <h1>Crea il tuo bey</h1>
-    <p class="muted">Scegli lama, ratchet e punta. Ti diciamo cosa comprare (max 3 bey).</p>
+    <div class="header-row">
+      <div>
+        <h1>Crea il tuo bey</h1>
+        <p class="muted">Scegli lama, ratchet e punta. Ti diciamo cosa comprare (max 3 bey).</p>
+      </div>
+      <nav class="header-nav">
+        <a href="community.html">Community build</a>
+      </nav>
+    </div>
+    <section class="card auth-card auth-top" id="home-auth">
+      <h2>Accesso</h2>
+      <p class="muted">Accedi per usare Community build. Solo email + password.</p>
+      <div class="auth-grid">
+        <form id="email-form">
+          <label>
+            Email
+            <input type="email" id="email-input" placeholder="nome@email.it" required />
+          </label>
+          <label>
+            Password
+            <input type="password" id="password-input" placeholder="Min 6 caratteri" required />
+          </label>
+          <div class="auth-row">
+            <button type="submit">Accedi</button>
+            <button type="button" class="secondary" id="email-register">Registrati</button>
+          </div>
+        </form>
+      </div>
+      <div class="auth-row">
+        <button type="button" class="secondary is-hidden" id="logout-btn">Logout</button>
+      </div>
+      <p class="muted" id="auth-message"></p>
+    </section>
   </header>
 
   <main class="layout">
     <form class="card" id="bey-form">
+      <label class="toggle">
+        <span>Voglio comporre un CX (Assist blade)</span>
+        <span class="switch">
+          <input type="checkbox" id="cx-toggle" />
+          <span class="slider"></span>
+        </span>
+      </label>
       <label>
         Lama
-        <select id="blade-select" required>
+        <select id="blade-select">
           <option value="">Seleziona la lama</option>
         </select>
         <div class="preview-row">
           <img class="preview-img" id="blade-preview" alt="Anteprima lama" />
         </div>
       </label>
+      <label id="assist-field" class="is-hidden">
+        Assist blade (CX)
+        <select id="assist-select">
+          <option value="">Seleziona la assist blade</option>
+        </select>
+      </label>
       <label>
         Ratchet
-        <select id="ratchet-select" required>
+        <select id="ratchet-select">
           <option value="">Seleziona il ratchet</option>
         </select>
         <div class="preview-row">
@@ -219,7 +401,7 @@
       </label>
       <label>
         Punta
-        <select id="bit-select" required>
+        <select id="bit-select">
           <option value="">Seleziona la punta</option>
         </select>
         <div class="preview-row">
@@ -486,14 +668,14 @@
       { name: "Scythe Incendio (F9583)", beys: [{ blade: "Scythe Incendio", ratchet: "4-60", bit: "T" }] },
       { name: "Lance Knight (G0184)", beys: [{ blade: "Lance Knight", ratchet: "4-80", bit: "HN" }] },
       { name: "Claw Leon (G0193)", beys: [{ blade: "Claw Leon", ratchet: "5-60", bit: "P" }] },
-      { name: "Courage Dran S (G1677)", beys: [{ blade: "Courage Dran S", ratchet: "6-60", bit: "V" }] },
-      { name: "Reaper Incendio T (G1678)", beys: [{ blade: "Reaper Incendio T", ratchet: "4-70", bit: "K" }] },
-      { name: "Arc Wizard R (G1679)", beys: [{ blade: "Arc Wizard R", ratchet: "4-55", bit: "LO" }] },
-      { name: "Dark Perseus B (G1680)", beys: [{ blade: "Dark Perseus B", ratchet: "6-80", bit: "W" }] },
-      { name: "Brush Fox J (G1681)", beys: [{ blade: "Brush Fox J", ratchet: "9-70", bit: "GR" }] },
+      { name: "Courage Dran S (G1677)", assistBlade: "Slash", beys: [{ blade: "Courage Dran S", ratchet: "6-60", bit: "V" }] },
+      { name: "Reaper Incendio T (G1678)", assistBlade: "Turn", beys: [{ blade: "Reaper Incendio T", ratchet: "4-70", bit: "K" }] },
+      { name: "Arc Wizard R (G1679)", assistBlade: "Round", beys: [{ blade: "Arc Wizard R", ratchet: "4-55", bit: "LO" }] },
+      { name: "Dark Perseus B (G1680)", assistBlade: "Bumper", beys: [{ blade: "Dark Perseus B", ratchet: "6-80", bit: "W" }] },
+      { name: "Brush Fox J (G1681)", assistBlade: "Jaggy", beys: [{ blade: "Brush Fox J", ratchet: "9-70", bit: "GR" }] },
       { name: "Fort Hornet R (G1682)", beys: [{ blade: "Fort Hornet R", ratchet: "7-60", bit: "T" }] },
       { name: "Wriggle Kraken S (G1683)", beys: [{ blade: "Wriggle Kraken S", ratchet: "3-85", bit: "O" }] },
-      { name: "Antler Stag B (G1684)", beys: [{ blade: "Antler Stag B", ratchet: "2-60", bit: "HN" }] },
+      { name: "Antler Stag B (G1684)", assistBlade: "Bumper", beys: [{ blade: "Antler Stag B", ratchet: "2-60", bit: "HN" }] },
       { name: "Steel Samurai (G0188)", beys: [{ blade: "Steel Samurai", ratchet: "4-80", bit: "T" }] },
       { name: "Horn Rhino (G0192)", beys: [{ blade: "Horn Rhino", ratchet: "3-80", bit: "S" }] },
       { name: "Keel Shark (G0194)", beys: [{ blade: "Keel Shark", ratchet: "3-60", bit: "LF" }] },
@@ -576,33 +758,53 @@
     ];
 
     const bladeSelect = document.getElementById("blade-select");
+    const assistSelect = document.getElementById("assist-select");
     const ratchetSelect = document.getElementById("ratchet-select");
     const bitSelect = document.getElementById("bit-select");
+    const cxToggle = document.getElementById("cx-toggle");
+    const assistField = document.getElementById("assist-field");
     const form = document.getElementById("bey-form");
     const results = document.getElementById("bey-results");
     const bladePreview = document.getElementById("blade-preview");
     const ratchetPreview = document.getElementById("ratchet-preview");
     const bitPreview = document.getElementById("bit-preview");
 
-    if (form && bladeSelect && ratchetSelect && bitSelect && results) {
+    if (
+      form &&
+      bladeSelect &&
+      assistSelect &&
+      ratchetSelect &&
+      bitSelect &&
+      results &&
+      cxToggle &&
+      assistField
+    ) {
       const blades = new Set();
+      const assists = new Set();
       const ratchets = new Set();
       const bits = new Set();
 
       const beys = products.reduce((acc, product) => {
+        const assistBlade = product.assistBlade || "";
         product.beys.forEach((bey) => {
-          acc.push({ ...bey, product: product.name });
+          acc.push({ ...bey, assistBlade, product: product.name });
         });
         return acc;
       }, []);
 
       beys.forEach((bey) => {
         blades.add(bey.blade);
+        if (bey.assistBlade) {
+          assists.add(bey.assistBlade);
+        }
         ratchets.add(bey.ratchet);
         bits.add(bey.bit);
       });
 
       const sortedBlades = Array.from(blades).sort((a, b) =>
+        a.localeCompare(b, "it")
+      );
+      const sortedAssists = Array.from(assists).sort((a, b) =>
         a.localeCompare(b, "it")
       );
       const sortedRatchets = Array.from(ratchets).sort((a, b) =>
@@ -627,6 +829,27 @@
           bladePreview.classList.remove("active");
         }
       });
+
+      sortedAssists.forEach((assist) => {
+        const option = document.createElement("option");
+        option.value = assist;
+        option.textContent = assist;
+        assistSelect.appendChild(option);
+      });
+
+      const syncAssistVisibility = () => {
+        if (cxToggle.checked) {
+          assistField.classList.remove("is-hidden");
+          assistSelect.disabled = false;
+        } else {
+          assistField.classList.add("is-hidden");
+          assistSelect.value = "";
+          assistSelect.disabled = true;
+        }
+      };
+
+      cxToggle.addEventListener("change", syncAssistVisibility);
+      syncAssistVisibility();
 
       sortedRatchets.forEach((ratchet) => {
         const option = document.createElement("option");
@@ -668,26 +891,44 @@
         event.preventDefault();
 
         const blade = bladeSelect.value.trim();
+        const assistBlade = cxToggle.checked ? assistSelect.value.trim() : "";
         const ratchet = ratchetSelect.value.trim();
         const bit = bitSelect.value.trim();
+        const requested = { blade, assistBlade, ratchet, bit };
+        const hasRequest = Object.values(requested).some(Boolean);
+
+        if (!hasRequest) {
+          results.innerHTML = `
+            <h2>Risultato</h2>
+            <p class="muted">Seleziona almeno un pezzo per cercare.</p>
+          `;
+          return;
+        }
 
         const candidates = beys.filter(
-          (bey) => bey.blade === blade || bey.ratchet === ratchet || bey.bit === bit
+          (bey) =>
+            (blade && bey.blade === blade) ||
+            (assistBlade && bey.assistBlade === assistBlade) ||
+            (ratchet && bey.ratchet === ratchet) ||
+            (bit && bey.bit === bit)
         );
 
         const comboKeys = new Set();
         const combos = [];
 
         const coversTarget = (combo) => ({
-          blade: combo.some((bey) => bey.blade === blade),
-          ratchet: combo.some((bey) => bey.ratchet === ratchet),
-          bit: combo.some((bey) => bey.bit === bit),
+          blade: !blade || combo.some((bey) => bey.blade === blade),
+          assistBlade:
+            !assistBlade || combo.some((bey) => bey.assistBlade === assistBlade),
+          ratchet: !ratchet || combo.some((bey) => bey.ratchet === ratchet),
+          bit: !bit || combo.some((bey) => bey.bit === bit),
         });
 
         const pushCombo = (combo) => {
           const key = combo
             .map(
-              (bey) => `${bey.product}|${bey.blade}|${bey.ratchet}|${bey.bit}`
+              (bey) =>
+                `${bey.product}|${bey.blade}|${bey.assistBlade}|${bey.ratchet}|${bey.bit}`
             )
             .sort()
             .join("||");
@@ -697,35 +938,26 @@
           }
         };
 
-        for (let i = 0; i < candidates.length; i += 1) {
-          const one = [candidates[i]];
-          const cover = coversTarget(one);
-          if (cover.blade && cover.ratchet && cover.bit) {
-            pushCombo(one);
-          }
-        }
+        const maxBeys = cxToggle.checked ? 4 : 3;
 
-        for (let i = 0; i < candidates.length; i += 1) {
-          for (let j = i + 1; j < candidates.length; j += 1) {
-            const two = [candidates[i], candidates[j]];
-            const cover = coversTarget(two);
-            if (cover.blade && cover.ratchet && cover.bit) {
-              pushCombo(two);
+        const buildCombos = (startIndex, current) => {
+          if (current.length > 0) {
+            const cover = coversTarget(current);
+            if (cover.blade && cover.assistBlade && cover.ratchet && cover.bit) {
+              pushCombo(current);
             }
           }
-        }
 
-        for (let i = 0; i < candidates.length; i += 1) {
-          for (let j = i + 1; j < candidates.length; j += 1) {
-            for (let k = j + 1; k < candidates.length; k += 1) {
-              const three = [candidates[i], candidates[j], candidates[k]];
-              const cover = coversTarget(three);
-              if (cover.blade && cover.ratchet && cover.bit) {
-                pushCombo(three);
-              }
-            }
+          if (current.length === maxBeys) {
+            return;
           }
-        }
+
+          for (let i = startIndex; i < candidates.length; i += 1) {
+            buildCombos(i + 1, [...current, candidates[i]]);
+          }
+        };
+
+        buildCombos(0, []);
 
         combos.sort((a, b) => a.length - b.length);
 
@@ -755,6 +987,7 @@
                     <div class="result-row">
                       <div class="result-meta">
                         <div>${bey.blade} (${bey.ratchet}${bey.bit})</div>
+                        ${bey.assistBlade ? `<div class="pill-note">Assist blade: ${bey.assistBlade}</div>` : ``}
                         <div class="part-row">
                           ${bladeUrl ? `<img class="part-icon" src="${bladeUrl}" alt="Lama ${bey.blade}" />` : ``}
                           ${ratchetUrl ? `<img class="part-icon" src="${ratchetUrl}" alt="Ratchet ${bey.ratchet}" />` : ``}
@@ -783,12 +1016,89 @@
             : "";
         results.innerHTML = `
           <h2>Risultato</h2>
-          <p>Per ottenere <strong>${blade} ${ratchet}${bit}</strong> puoi comprare questi bey (max 3):</p>
+          <p>Risultati per <strong>${[blade, assistBlade, ratchet, bit].filter(Boolean).join(" ")}</strong> (max ${maxBeys}):</p>
           ${optionHtml}
           ${extraNote}
         `;
       });
     }
+  </script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyABecShIp74jQSTjYiT-i2eAmcjBz1NJ8g",
+      authDomain: "progettobey.firebaseapp.com",
+      projectId: "progettobey",
+      storageBucket: "progettobey.firebasestorage.app",
+      messagingSenderId: "736351155639",
+      appId: "1:736351155639:web:6b2f911e333a0ba3d1a432",
+      measurementId: "G-ENM35CJKKR"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const authMessage = document.getElementById("auth-message");
+    const emailForm = document.getElementById("email-form");
+    const emailInput = document.getElementById("email-input");
+    const passwordInput = document.getElementById("password-input");
+    const emailRegisterBtn = document.getElementById("email-register");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    const setAuthMessage = (message, isError = false) => {
+      authMessage.textContent = message;
+      authMessage.style.color = isError ? "#ff6a6a" : "var(--muted)";
+    };
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        logoutBtn.classList.remove("is-hidden");
+        setAuthMessage(`Sei loggato come ${user.email || user.phoneNumber}.`);
+      } else {
+        logoutBtn.classList.add("is-hidden");
+        setAuthMessage("");
+      }
+    });
+
+    emailForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setAuthMessage("");
+      try {
+        await signInWithEmailAndPassword(
+          auth,
+          emailInput.value.trim(),
+          passwordInput.value
+        );
+      } catch (error) {
+        setAuthMessage("Login email fallito. Controlla i dati.", true);
+      }
+    });
+
+    emailRegisterBtn.addEventListener("click", async () => {
+      setAuthMessage("");
+      try {
+        await createUserWithEmailAndPassword(
+          auth,
+          emailInput.value.trim(),
+          passwordInput.value
+        );
+      } catch (error) {
+        setAuthMessage("Registrazione email fallita. Controlla i dati.", true);
+      }
+    });
+
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+    });
   </script>
 </body>
 </html>
