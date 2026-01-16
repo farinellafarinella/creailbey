@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Community Build - My Bey Tool</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #050505;
+        --card: #111111;
+        --accent: #ff2d2d;
+        --text: #f5f5f5;
+        --muted: #b8b8b8;
+        --line: #1f1f1f;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 32px 20px 64px;
+        font-family: "Trebuchet MS", "Segoe UI", Tahoma, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      header {
+        margin-bottom: 24px;
+      }
+
+      .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .header-nav a {
+        color: #0a0a0a;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 1.1rem;
+        background: var(--accent);
+        padding: 12px 20px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 22px rgba(255, 45, 45, 0.28);
+      }
+
+      .header-nav a:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 26px rgba(255, 45, 45, 0.38);
+      }
+
+      .header-nav button {
+        padding: 12px 20px;
+        border-radius: 999px;
+      }
+
+      .header-nav button.is-hidden {
+        display: none;
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin: 0 0 8px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .muted {
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .auth-card {
+        margin-bottom: 18px;
+      }
+
+      .auth-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+      }
+
+      .auth-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+
+      .gated.is-hidden {
+        display: none;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 12px;
+        font-weight: 600;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        margin-top: 6px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid #2a2a2a;
+        background: #0a0a0a;
+        color: var(--text);
+      }
+
+      button {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      button.secondary {
+        background: transparent;
+        border: 1px solid var(--line);
+        color: var(--text);
+      }
+
+      .auth-card button {
+        min-width: 120px;
+      }
+
+      .toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 52px;
+        height: 28px;
+        flex-shrink: 0;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background: #2a2a2a;
+        transition: 0.2s ease;
+        border-radius: 999px;
+      }
+
+      .slider::before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 3px;
+        top: 3px;
+        background: #ffffff;
+        transition: 0.2s ease;
+        border-radius: 50%;
+      }
+
+      .switch input:checked + .slider {
+        background: var(--accent);
+      }
+
+      .switch input:checked + .slider::before {
+        transform: translateX(24px);
+      }
+
+      .preview-row {
+        margin-top: 8px;
+      }
+
+      .preview-img {
+        width: 70px;
+        height: 70px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: #0f0f0f;
+        object-fit: contain;
+        padding: 6px;
+        display: none;
+      }
+
+      .preview-img.active {
+        display: inline-block;
+      }
+
+      .is-hidden {
+        display: none;
+      }
+
+      .build-list {
+        display: grid;
+        gap: 16px;
+      }
+
+      .build-item {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+        background: #0b0b0b;
+      }
+
+      .build-title {
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      .vote-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .part-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .part-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: #0f0f0f;
+        object-fit: contain;
+        padding: 4px;
+      }
+
+      .vote-count {
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .suggestion-form {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+      }
+
+      .suggestion-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+      }
+
+      @media (max-width: 720px) {
+        .header-row {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-row">
+        <div>
+          <h1>Community Build</h1>
+          <p class="muted">
+            Condividi la tua build, vota le combo e suggerisci alternative.
+            Accesso richiesto per partecipare.
+          </p>
+        </div>
+        <nav class="header-nav">
+          <a href="index.html">Torna al tool</a>
+          <button class="secondary is-hidden" id="logout-btn" type="button">
+            Logout
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <section class="card auth-card" id="auth-card">
+      <h2>Accedi o registrati</h2>
+      <p class="muted">Puoi usare email+password.</p>
+      <div class="auth-grid">
+        <form id="email-form">
+          <label>
+            Email
+            <input type="email" id="email-input" placeholder="nome@email.it" required />
+          </label>
+          <label>
+            Password
+            <input type="password" id="password-input" placeholder="Min 6 caratteri" required />
+          </label>
+          <div class="auth-row">
+            <button type="submit">Accedi</button>
+            <button type="button" class="secondary" id="email-register">Registrati</button>
+          </div>
+        </form>
+      </div>
+      <p class="muted" id="auth-message"></p>
+    </section>
+
+    <main class="layout gated is-hidden" id="community-content">
+      <form class="card" id="build-form">
+      <label class="toggle">
+        <span>Voglio comporre un CX (Assist blade)</span>
+        <span class="switch">
+          <input type="checkbox" id="cx-toggle" />
+          <span class="slider"></span>
+        </span>
+      </label>
+        <label>
+          Lama
+          <select id="blade-input">
+            <option value="">Seleziona la lama</option>
+          </select>
+          <div class="preview-row">
+            <img class="preview-img" id="blade-preview" alt="Anteprima lama" />
+          </div>
+        </label>
+        <label id="assist-field" class="is-hidden">
+          Assist blade (CX)
+          <select id="assist-input">
+            <option value="">Seleziona la assist blade</option>
+          </select>
+        </label>
+        <label>
+          Ratchet
+          <select id="ratchet-input">
+            <option value="">Seleziona il ratchet</option>
+          </select>
+          <div class="preview-row">
+            <img class="preview-img" id="ratchet-preview" alt="Anteprima ratchet" />
+          </div>
+        </label>
+        <label>
+          Punta
+          <select id="bit-input">
+            <option value="">Seleziona la punta</option>
+          </select>
+          <div class="preview-row">
+            <img class="preview-img" id="bit-preview" alt="Anteprima punta" />
+          </div>
+        </label>
+        <button type="submit">Condividi la build</button>
+      </form>
+
+      <section class="card">
+        <h2>Build condivise</h2>
+        <div class="build-list" id="build-list"></div>
+      </section>
+    </main>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut
+      } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        onSnapshot,
+        query,
+        orderBy,
+        serverTimestamp,
+        doc,
+        runTransaction,
+        updateDoc,
+        arrayUnion,
+        getDoc
+      } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyABecShIp74jQSTjYiT-i2eAmcjBz1NJ8g",
+        authDomain: "progettobey.firebaseapp.com",
+        projectId: "progettobey",
+        storageBucket: "progettobey.firebasestorage.app",
+        messagingSenderId: "736351155639",
+        appId: "1:736351155639:web:6b2f911e333a0ba3d1a432",
+        measurementId: "G-ENM35CJKKR"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+      const products = [
+        {
+          name: "Iron Man & Thanos (Dual Pack)",
+          beys: [
+            { blade: "Iron Man", ratchet: "4-80", bit: "B" },
+            { blade: "Thanos", ratchet: "4-60", bit: "P" }
+          ]
+        },
+        {
+          name: "Spider-Man & Venom (Dual Pack)",
+          beys: [
+            { blade: "Spider-Man", ratchet: "3-60", bit: "F" },
+            { blade: "Venom", ratchet: "3-80", bit: "N" }
+          ]
+        },
+        {
+          name: "Optimus Prime & Megatron (Dual Pack)",
+          beys: [
+            { blade: "Optimus Prime", ratchet: "4-60", bit: "P" },
+            { blade: "Megatron", ratchet: "4-80", bit: "B" }
+          ]
+        },
+        {
+          name: "Optimus Primal & Starscream (Dual Pack)",
+          beys: [
+            { blade: "Optimus Primal", ratchet: "3-60", bit: "F" },
+            { blade: "Starscream", ratchet: "3-80", bit: "N" }
+          ]
+        },
+        {
+          name: "Mandolorian & Moff Gideon (Dual Pack)",
+          beys: [
+            { blade: "Mandolorian", ratchet: "3-80", bit: "F" },
+            { blade: "Moff Gideon", ratchet: "3-80", bit: "N" }
+          ]
+        },
+        {
+          name: "Luke Skywalker & Darth Vader (Dual Pack)",
+          beys: [
+            { blade: "Luke Skywalker", ratchet: "4-80", bit: "B" },
+            { blade: "Darth Vader", ratchet: "4-60", bit: "P" }
+          ]
+        },
+        {
+          name: "T-Rex & Mosasaurus (Dual Pack)",
+          beys: [
+            { blade: "T-Rex", ratchet: "1-80", bit: "GB" },
+            { blade: "Mosasaurus", ratchet: "9-60", bit: "U" }
+          ]
+        },
+        {
+          name: "Spinosaurus & Quetzalcoatlus (Dual Pack)",
+          beys: [
+            { blade: "Spinosaurus", ratchet: "1-85", bit: "A" },
+            { blade: "Quetzalcoatlus", ratchet: "4-55", bit: "D" }
+          ]
+        },
+        { name: "Sword Dran (F9580)", beys: [{ blade: "Sword Dran", ratchet: "3-60", bit: "F" }] },
+        { name: "Helm Knight (F9581)", beys: [{ blade: "Helm Knight", ratchet: "3-80", bit: "N" }] },
+        { name: "Arrow Wizard (F9582)", beys: [{ blade: "Arrow Wizard", ratchet: "4-80", bit: "B" }] },
+        { name: "Scythe Incendio (F9583)", beys: [{ blade: "Scythe Incendio", ratchet: "4-60", bit: "T" }] },
+        { name: "Lance Knight (G0184)", beys: [{ blade: "Lance Knight", ratchet: "4-80", bit: "HN" }] },
+        { name: "Claw Leon (G0193)", beys: [{ blade: "Claw Leon", ratchet: "5-60", bit: "P" }] },
+        { name: "Courage Dran S (G1677)", assistBlade: "Slash", beys: [{ blade: "Courage Dran S", ratchet: "6-60", bit: "V" }] },
+        { name: "Reaper Incendio T (G1678)", assistBlade: "Turn", beys: [{ blade: "Reaper Incendio T", ratchet: "4-70", bit: "K" }] },
+        { name: "Arc Wizard R (G1679)", assistBlade: "Round", beys: [{ blade: "Arc Wizard R", ratchet: "4-55", bit: "LO" }] },
+        { name: "Dark Perseus B (G1680)", assistBlade: "Bumper", beys: [{ blade: "Dark Perseus B", ratchet: "6-80", bit: "W" }] },
+        { name: "Brush Fox J (G1681)", assistBlade: "Jaggy", beys: [{ blade: "Brush Fox J", ratchet: "9-70", bit: "GR" }] },
+        { name: "Fort Hornet R (G1682)", beys: [{ blade: "Fort Hornet R", ratchet: "7-60", bit: "T" }] },
+        { name: "Wriggle Kraken S (G1683)", beys: [{ blade: "Wriggle Kraken S", ratchet: "3-85", bit: "O" }] },
+        { name: "Antler Stag B (G1684)", assistBlade: "Bumper", beys: [{ blade: "Antler Stag B", ratchet: "2-60", bit: "HN" }] },
+        { name: "Steel Samurai (G0188)", beys: [{ blade: "Steel Samurai", ratchet: "4-80", bit: "T" }] },
+        { name: "Horn Rhino (G0192)", beys: [{ blade: "Horn Rhino", ratchet: "3-80", bit: "S" }] },
+        { name: "Keel Shark (G0194)", beys: [{ blade: "Keel Shark", ratchet: "3-60", bit: "LF" }] },
+        { name: "Talon Ptera (G0195)", beys: [{ blade: "Talon Ptera", ratchet: "3-80", bit: "B" }] },
+        { name: "Sting Unicorn (G0283)", beys: [{ blade: "Sting Unicorn", ratchet: "5-60", bit: "GP" }] },
+        { name: "Roar Tyranno (G0284)", beys: [{ blade: "Roar Tyranno", ratchet: "9-60", bit: "GF" }] },
+        { name: "Scythe Incendio (G0285)", beys: [{ blade: "Scythe Incendio", ratchet: "3-80", bit: "B" }] },
+        { name: "Savage Bear (G0286)", beys: [{ blade: "Savage Bear", ratchet: "3-60", bit: "S" }] },
+        { name: "Cowl Sphinx (G1530)", beys: [{ blade: "Cowl Sphinx", ratchet: "9-80", bit: "GN" }] },
+        { name: "Arrow Wizard (G1531)", beys: [{ blade: "Arrow Wizard", ratchet: "4-80", bit: "GB" }] },
+        { name: "Obsidian Shell (G1533)", beys: [{ blade: "Obsidian Shell", ratchet: "4-60", bit: "D" }] },
+        { name: "Keel Shark (G1534)", beys: [{ blade: "Keel Shark", ratchet: "1-60", bit: "Q" }] },
+        { name: "Tide Whale (G1669)", beys: [{ blade: "Tide Whale", ratchet: "5-80", bit: "E" }] },
+        { name: "Dagger Dran (G1670)", beys: [{ blade: "Dagger Dran", ratchet: "4-70", bit: "Q" }] },
+        { name: "Lance Knight (G1671)", beys: [{ blade: "Lance Knight", ratchet: "3-60", bit: "LF" }] },
+        { name: "Yell Kong (G1754)", beys: [{ blade: "Yell Kong", ratchet: "3-60", bit: "GB" }] },
+        { name: "Arrow Wizard (G1755)", beys: [{ blade: "Arrow Wizard", ratchet: "4-80", bit: "O" }] },
+        { name: "Soar Phoenix (G1756)", beys: [{ blade: "Soar Phoenix", ratchet: "5-80", bit: "H" }] },
+        { name: "Buster Dran (G1536)", beys: [{ blade: "Buster Dran", ratchet: "1-60", bit: "A" }] },
+        { name: "Wand Wizard (G1537)", beys: [{ blade: "Wand Wizard", ratchet: "5-70", bit: "DB" }] },
+        { name: "Wand Wizard (G1538)", beys: [{ blade: "Wand Wizard", ratchet: "1-60", bit: "R" }] },
+        { name: "Shadow Shinobi (G1539)", beys: [{ blade: "Shadow Shinobi", ratchet: "1-80", bit: "MN" }] },
+        { name: "Scarlet Garuda (G1673)", beys: [{ blade: "Scarlet Garuda", ratchet: "4-70", bit: "TP" }] },
+        { name: "Sterling Wolf (G1674)", beys: [{ blade: "Sterling Wolf", ratchet: "3-80", bit: "FB" }] },
+        { name: "Shelter Drake (G1675)", beys: [{ blade: "Shelter Drake", ratchet: "7-80", bit: "GP" }] },
+        { name: "Rock Golem (G1676)", beys: [{ blade: "Rock Golem", ratchet: "1-60", bit: "UN" }] },
+        { name: "Buster Dran (G1751)", beys: [{ blade: "Buster Dran", ratchet: "5-70", bit: "DB" }] },
+        { name: "Hammer Incendio (G1752)", beys: [{ blade: "Hammer Incendio", ratchet: "3-70", bit: "H" }] },
+        { name: "Stun Medusa (G2738)", beys: [{ blade: "Stun Medusa", ratchet: "9-60", bit: "GB" }] },
+        { name: "Rudder Phoenix (G2739)", beys: [{ blade: "Rudder Phoenix", ratchet: "4-70", bit: "LF" }] },
+        { name: "Feather Phoenix (G2740)", beys: [{ blade: "Feather Phoenix", ratchet: "2-60", bit: "N" }] },
+        {
+          name: "Chain Incendio & Arrow Wizard (Dual Pack)",
+          beys: [
+            { blade: "Chain Incendio", ratchet: "5-60", bit: "HT" },
+            { blade: "Arrow Wizard", ratchet: "4-60", bit: "N" },
+          ],
+        },
+        {
+          name: "Knife Shinobi & Keel Shark (Dual Pack)",
+          beys: [
+            { blade: "Knife Shinobi", ratchet: "4-80", bit: "HN" },
+            { blade: "Keel Shark", ratchet: "3-80", bit: "F" },
+          ],
+        },
+        {
+          name: "Yell Kong & Helm Knight (Dual Pack)",
+          beys: [
+            { blade: "Yell Kong", ratchet: "3-60", bit: "GB" },
+            { blade: "Helm Knight", ratchet: "5-80", bit: "T" },
+          ],
+        },
+        {
+          name: "Pearl Tiger & Gill Shark (Dual Pack)",
+          beys: [
+            { blade: "Pearl Tiger", ratchet: "3-60", bit: "U" },
+            { blade: "Gill Shark", ratchet: "4-70", bit: "O" },
+          ],
+        },
+        {
+          name: "Circle Ghost & Chain Incendio (Dual Pack)",
+          beys: [
+            { blade: "Circle Ghost", ratchet: "0-80", bit: "GB" },
+            { blade: "Chain Incendio", ratchet: "5-60", bit: "HT" },
+          ],
+        },
+        {
+          name: "Hack Viking & Circle Ghost (Dual Pack)",
+          beys: [
+            { blade: "Circle Ghost", ratchet: "0-80", bit: "GB" },
+          ],
+        },
+        {
+          name: "Drop Attack Battle Set (G0842)",
+          beys: [
+            { blade: "Impact Drake", ratchet: "9-60", bit: "LR" },
+            { blade: "Hover Wyvern", ratchet: "3-85", bit: "N" },
+          ],
+        },
+      ];
+
+      const buildForm = document.getElementById("build-form");
+      const buildList = document.getElementById("build-list");
+      const bladeInput = document.getElementById("blade-input");
+      const assistInput = document.getElementById("assist-input");
+      const ratchetInput = document.getElementById("ratchet-input");
+      const bitInput = document.getElementById("bit-input");
+      const cxToggle = document.getElementById("cx-toggle");
+      const assistField = document.getElementById("assist-field");
+      const bladePreview = document.getElementById("blade-preview");
+      const ratchetPreview = document.getElementById("ratchet-preview");
+      const bitPreview = document.getElementById("bit-preview");
+      const authCard = document.getElementById("auth-card");
+      const communityContent = document.getElementById("community-content");
+      const authMessage = document.getElementById("auth-message");
+      const emailForm = document.getElementById("email-form");
+      const emailInput = document.getElementById("email-input");
+      const passwordInput = document.getElementById("password-input");
+      const emailRegisterBtn = document.getElementById("email-register");
+      const logoutBtn = document.getElementById("logout-btn");
+
+      let unsubscribeBuilds = null;
+
+      const storageBase =
+        "https://firebasestorage.googleapis.com/v0/b/progettobey.firebasestorage.app/o/";
+      const storageUrl = (path) =>
+        `${storageBase}${encodeURIComponent(path)}?alt=media`;
+      const bladeImages = {
+        "Antler Stag B": "IMAGES/blades/antler_stag_b.png",
+        "Arc Wizard R": "IMAGES/blades/arc_wizard_r.png",
+        "Arrow Wizard": "IMAGES/blades/arrow_wizard.png",
+        "Brush Fox J": "IMAGES/blades/brush_fox_j.png",
+        "Buster Dran": "IMAGES/blades/buster_dran.png",
+        "Chain Incendio": "IMAGES/blades/chain_incendio.png",
+        "Circle Ghost": "IMAGES/blades/circle_ghost.png",
+        "Claw Leon": "IMAGES/blades/claw_leon.png",
+        "Courage Dran S": "IMAGES/blades/courage_dran_s.png",
+        "Cowl Sphinx": "IMAGES/blades/cowl_sphinx.png",
+        "Dark Perseus B": "IMAGES/blades/dark_perseus_b.png",
+        "Dagger Dran": "IMAGES/blades/dagger_dran.png",
+        "Sword Dran": "IMAGES/blades/sword_dran.png",
+        "Feather Phoenix": "IMAGES/blades/feather_phoenix.png",
+        "Fort Hornet R": "IMAGES/blades/fort_hornet_r.png",
+        "Gill Shark": "IMAGES/blades/gill_shark.png",
+        "Hammer Incendio": "IMAGES/blades/hammer_incendio.png",
+        "Helm Knight": "IMAGES/blades/helm_knight.png",
+        "Horn Rhino": "IMAGES/blades/horn_rhino.png",
+        "Hover Wyvern": "IMAGES/blades/hover_wyvern.png",
+        "Impact Drake": "IMAGES/blades/impact_drake.png",
+        "Keel Shark": "IMAGES/blades/keel_shark.png",
+        "Knife Shinobi": "IMAGES/blades/knife_shinobi.png",
+        "Lance Knight": "IMAGES/blades/lance_knight.png",
+        "Obsidian Shell": "IMAGES/blades/obsidian_shell.png",
+        "Pearl Tiger": "IMAGES/blades/pearl_tiger.png",
+        "Reaper Incendio T": "IMAGES/blades/reaper_incendio_t.png",
+        "Roar Tyranno": "IMAGES/blades/roar_tyranno.png",
+        "Rock Golem": "IMAGES/blades/rock_golem.png",
+        "Rudder Phoenix": "IMAGES/blades/rudder_phoenix.png",
+        "Savage Bear": "IMAGES/blades/savage_bear.png",
+        "Scarlet Garuda": "IMAGES/blades/scarlet_garuda.png",
+        "Scythe Incendio": "IMAGES/blades/scythe_incendio.png",
+        "Shadow Shinobi": "IMAGES/blades/shadow_shinobi.png",
+        "Shelter Drake": "IMAGES/blades/shelter_drake.png",
+        "Soar Phoenix": "IMAGES/blades/soar_phoenix.png",
+        "Steel Samurai": "IMAGES/blades/steel_samurai.png",
+        "Sterling Wolf": "IMAGES/blades/sterling_wolf.png",
+        "Sting Unicorn": "IMAGES/blades/sting_unicorn.png",
+        "Stun Medusa": "IMAGES/blades/stun_medusa.png",
+        "Talon Ptera": "IMAGES/blades/talon_ptera.png",
+        "Tide Whale": "IMAGES/blades/tide_whale.png",
+        "Wand Wizard": "IMAGES/blades/wand_wizard.png",
+        "Wriggle Kraken S": "IMAGES/blades/wriggle_kraken_s.png",
+        "Yell Kong": "IMAGES/blades/yell_kong.png"
+      };
+      const bladeImage = (blade) =>
+        bladeImages[blade] ? storageUrl(bladeImages[blade]) : "";
+      const ratchetImage = (ratchet) =>
+        ratchet ? storageUrl(`IMAGES/ratchet/${ratchet}.png`) : "";
+      const bitImage = (bit) => (bit ? storageUrl(`IMAGES/bit/${bit}.png`) : "");
+
+      const blades = new Set();
+      const assists = new Set();
+      const ratchets = new Set();
+      const bits = new Set();
+
+      products.forEach((product) => {
+        const assistBlade = product.assistBlade || "";
+        product.beys.forEach((bey) => {
+          blades.add(bey.blade);
+          ratchets.add(bey.ratchet);
+          bits.add(bey.bit);
+          if (assistBlade) {
+            assists.add(assistBlade);
+          }
+        });
+      });
+
+      const sortedBlades = Array.from(blades).sort((a, b) =>
+        a.localeCompare(b, "it")
+      );
+      const sortedAssists = Array.from(assists).sort((a, b) =>
+        a.localeCompare(b, "it")
+      );
+      const sortedRatchets = Array.from(ratchets).sort((a, b) =>
+        a.localeCompare(b, "it", { numeric: true })
+      );
+      const sortedBits = Array.from(bits).sort((a, b) => a.localeCompare(b, "it"));
+
+      sortedBlades.forEach((blade) => {
+        const option = document.createElement("option");
+        option.value = blade;
+        option.textContent = blade;
+        bladeInput.appendChild(option);
+      });
+
+      bladeInput.addEventListener("change", () => {
+        const url = bladeImage(bladeInput.value);
+        if (url) {
+          bladePreview.src = url;
+          bladePreview.classList.add("active");
+        } else {
+          bladePreview.removeAttribute("src");
+          bladePreview.classList.remove("active");
+        }
+      });
+
+      sortedAssists.forEach((assist) => {
+        const option = document.createElement("option");
+        option.value = assist;
+        option.textContent = assist;
+        assistInput.appendChild(option);
+      });
+
+      sortedRatchets.forEach((ratchet) => {
+        const option = document.createElement("option");
+        option.value = ratchet;
+        option.textContent = ratchet;
+        ratchetInput.appendChild(option);
+      });
+
+      ratchetInput.addEventListener("change", () => {
+        const url = ratchetImage(ratchetInput.value);
+        if (url) {
+          ratchetPreview.src = url;
+          ratchetPreview.classList.add("active");
+        } else {
+          ratchetPreview.removeAttribute("src");
+          ratchetPreview.classList.remove("active");
+        }
+      });
+
+      sortedBits.forEach((bit) => {
+        const option = document.createElement("option");
+        option.value = bit;
+        option.textContent = bit;
+        bitInput.appendChild(option);
+      });
+
+      const bladeOptions = ['<option value="">Lama</option>']
+        .concat(sortedBlades.map((item) => `<option value="${item}">${item}</option>`))
+        .join("");
+      const assistOptions = ['<option value="">Assist (opz.)</option>']
+        .concat(sortedAssists.map((item) => `<option value="${item}">${item}</option>`))
+        .join("");
+      const ratchetOptions = ['<option value="">Ratchet</option>']
+        .concat(
+          sortedRatchets.map((item) => `<option value="${item}">${item}</option>`)
+        )
+        .join("");
+      const bitOptions = ['<option value="">Punta</option>']
+        .concat(sortedBits.map((item) => `<option value="${item}">${item}</option>`))
+        .join("");
+
+      bitInput.addEventListener("change", () => {
+        const url = bitImage(bitInput.value);
+        if (url) {
+          bitPreview.src = url;
+          bitPreview.classList.add("active");
+        } else {
+          bitPreview.removeAttribute("src");
+          bitPreview.classList.remove("active");
+        }
+      });
+
+      const syncAssistVisibility = () => {
+        if (cxToggle.checked) {
+          assistField.classList.remove("is-hidden");
+          assistInput.disabled = false;
+        } else {
+          assistField.classList.add("is-hidden");
+          assistInput.value = "";
+          assistInput.disabled = true;
+        }
+      };
+
+      cxToggle.addEventListener("change", syncAssistVisibility);
+      syncAssistVisibility();
+
+      const setAuthMessage = (message, isError = false) => {
+        authMessage.textContent = message;
+        authMessage.style.color = isError ? "#ff6a6a" : "var(--muted)";
+      };
+
+
+      const stopListening = () => {
+        if (unsubscribeBuilds) {
+          unsubscribeBuilds();
+          unsubscribeBuilds = null;
+        }
+      };
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          authCard.classList.add("is-hidden");
+          communityContent.classList.remove("is-hidden");
+          logoutBtn.classList.remove("is-hidden");
+          setAuthMessage("");
+          listenBuilds();
+        } else {
+          authCard.classList.remove("is-hidden");
+          communityContent.classList.add("is-hidden");
+          logoutBtn.classList.add("is-hidden");
+          buildList.innerHTML =
+            '<p class="muted">Accedi per vedere le build condivise.</p>';
+          stopListening();
+        }
+      });
+
+      logoutBtn.addEventListener("click", async () => {
+        await signOut(auth);
+      });
+
+      emailForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        setAuthMessage("");
+        try {
+          await signInWithEmailAndPassword(
+            auth,
+            emailInput.value.trim(),
+            passwordInput.value
+          );
+        } catch (error) {
+          setAuthMessage("Login email fallito. Controlla i dati.", true);
+        }
+      });
+
+      emailRegisterBtn.addEventListener("click", async () => {
+        setAuthMessage("");
+        try {
+          await createUserWithEmailAndPassword(
+            auth,
+            emailInput.value.trim(),
+            passwordInput.value
+          );
+        } catch (error) {
+          setAuthMessage("Registrazione email fallita. Controlla i dati.", true);
+        }
+      });
+
+
+      const renderBuilds = (builds) => {
+        if (builds.length === 0) {
+          buildList.innerHTML =
+            '<p class="muted">Nessuna build condivisa. Inizia tu!</p>';
+          return;
+        }
+
+        buildList.innerHTML = builds
+          .map((build) => {
+            const summary = [
+              build.blade,
+              build.assistBlade ? `Assist: ${build.assistBlade}` : "",
+              build.ratchet,
+              build.bit,
+            ]
+              .filter(Boolean)
+              .join(" · ");
+            const bladeOption = `<option value="${build.blade}" selected>${build.blade}</option>`;
+            const bladeUrl = bladeImage(build.blade);
+            const ratchetUrl = ratchetImage(build.ratchet);
+            const bitUrl = bitImage(build.bit);
+
+            const suggestions = build.suggestions || [];
+            const suggestionHtml = suggestions
+              .map(
+                (item) => `
+                <div class="muted">
+                  Suggerito: ${[item.blade, item.assistBlade, item.ratchet, item.bit]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </div>
+              `
+              )
+              .join("");
+
+            return `
+              <div class="build-item" data-id="${build.id}">
+                <div class="build-title">${summary}</div>
+                <div class="part-row">
+                  ${bladeUrl ? `<img class="part-icon" src="${bladeUrl}" alt="Lama ${build.blade}" />` : ``}
+                  ${ratchetUrl ? `<img class="part-icon" src="${ratchetUrl}" alt="Ratchet ${build.ratchet}" />` : ``}
+                  ${bitUrl ? `<img class="part-icon" src="${bitUrl}" alt="Punta ${build.bit}" />` : ``}
+                </div>
+                <div class="vote-count">👍 ${build.approveCount || 0} · 👎 ${build.disapproveCount || 0}</div>
+                <div class="vote-row">
+                  <button type="button" class="approve-btn">Approva</button>
+                  <button type="button" class="secondary disapprove-btn">Sconsiglia</button>
+                </div>
+                <div class="suggestion-form">
+                  <div class="muted">Suggerisci alternativa (opzionale)</div>
+                  <div class="suggestion-grid">
+                    <select class="suggest-blade" disabled>${bladeOption}</select>
+                    <select class="suggest-assist">${assistOptions}</select>
+                    <select class="suggest-ratchet">${ratchetOptions}</select>
+                    <select class="suggest-bit">${bitOptions}</select>
+                  </div>
+                  <div class="vote-row">
+                    <button type="button" class="secondary suggest-btn">
+                      Invia suggerimento
+                    </button>
+                  </div>
+                  ${suggestionHtml}
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+
+        const user = auth.currentUser;
+        if (user) {
+          document.querySelectorAll(".build-item").forEach(async (item) => {
+            const buildId = item.dataset.id;
+            const voteRef = doc(db, "builds", buildId, "votes", user.uid);
+            const voteSnap = await getDoc(voteRef);
+            if (voteSnap.exists()) {
+              item.querySelectorAll(".approve-btn, .disapprove-btn").forEach((btn) => {
+                btn.disabled = true;
+              });
+            }
+          });
+        }
+      };
+
+      function listenBuilds() {
+        stopListening();
+        const buildsQuery = query(
+          collection(db, "builds"),
+          orderBy("createdAt", "desc")
+        );
+        unsubscribeBuilds = onSnapshot(buildsQuery, (snapshot) => {
+          const builds = snapshot.docs.map((docSnap) => ({
+            id: docSnap.id,
+            ...docSnap.data(),
+          }));
+          renderBuilds(builds);
+        });
+      }
+
+      buildForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const blade = bladeInput.value.trim();
+        const assistBlade = cxToggle.checked ? assistInput.value.trim() : "";
+        const ratchet = ratchetInput.value.trim();
+        const bit = bitInput.value.trim();
+
+        if (!blade || !ratchet || !bit) {
+          alert("Inserisci almeno lama, ratchet e punta.");
+          return;
+        }
+
+        const user = auth.currentUser;
+        if (!user) {
+          alert("Devi essere loggato per condividere una build.");
+          return;
+        }
+        addDoc(collection(db, "builds"), {
+          blade,
+          assistBlade,
+          ratchet,
+          bit,
+          approveCount: 0,
+          disapproveCount: 0,
+          suggestions: [],
+          createdAt: serverTimestamp(),
+          userId: user.uid,
+        }).then(() => {
+          buildForm.reset();
+          syncAssistVisibility();
+        });
+      });
+
+      buildList.addEventListener("click", (event) => {
+        const item = event.target.closest(".build-item");
+        if (!item) return;
+        const id = item.dataset.id;
+
+        if (
+          event.target.classList.contains("approve-btn") ||
+          event.target.classList.contains("disapprove-btn")
+        ) {
+          const type = event.target.classList.contains("approve-btn")
+            ? "approve"
+            : "disapprove";
+          const user = auth.currentUser;
+          if (!user) {
+            alert("Devi essere loggato per votare.");
+            return;
+          }
+
+          const buildRef = doc(db, "builds", id);
+          const voteRef = doc(db, "builds", id, "votes", user.uid);
+          runTransaction(db, async (tx) => {
+            const voteSnap = await tx.get(voteRef);
+            if (voteSnap.exists()) {
+              throw new Error("already-voted");
+            }
+            const buildSnap = await tx.get(buildRef);
+            if (!buildSnap.exists()) {
+              throw new Error("missing-build");
+            }
+            const data = buildSnap.data();
+            const approveCount = data.approveCount || 0;
+            const disapproveCount = data.disapproveCount || 0;
+            tx.set(voteRef, { vote: type, createdAt: serverTimestamp() });
+            tx.update(buildRef, {
+              approveCount: approveCount + (type === "approve" ? 1 : 0),
+              disapproveCount: disapproveCount + (type === "disapprove" ? 1 : 0),
+            });
+          }).catch((error) => {
+            if (error.message === "already-voted") {
+              alert("Hai già votato questa build.");
+            }
+          });
+        }
+
+        if (event.target.classList.contains("suggest-btn")) {
+          const blade = item.querySelector(".suggest-blade").value.trim();
+          const assistBlade = item.querySelector(".suggest-assist").value.trim();
+          const ratchet = item.querySelector(".suggest-ratchet").value.trim();
+          const bit = item.querySelector(".suggest-bit").value.trim();
+          const hasSuggestion = blade || assistBlade || ratchet || bit;
+
+          if (!hasSuggestion) {
+            alert("Inserisci almeno un pezzo per il suggerimento.");
+            return;
+          }
+
+          const user = auth.currentUser;
+          if (!user) {
+            alert("Devi essere loggato per suggerire.");
+            return;
+          }
+          const buildRef = doc(db, "builds", id);
+          updateDoc(buildRef, {
+            suggestions: arrayUnion({
+              blade,
+              assistBlade,
+              ratchet,
+              bit,
+              userId: user.uid,
+              createdAt: new Date().toISOString(),
+            }),
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
